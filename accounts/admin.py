@@ -10,10 +10,11 @@ class CustomUserAdmin(UserAdmin):
     form = CustomUserChangeForm
     models = CustomUser
     list_display = [
-        "image_tag",
         "username",
+        "image_tag",
         "email",
-        "is_staff",   
+        "is_staff",
+        "authorized",
     ]
 
     fieldsets = UserAdmin.fieldsets + (("info",{

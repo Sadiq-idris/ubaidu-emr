@@ -1,6 +1,8 @@
 from django.db import models
 from accounts.models import Facility
 from django.utils import timezone
+from django.contrib.auth import get_user_model
+
 
 
 class Patient(models.Model):
@@ -64,6 +66,7 @@ class Patient(models.Model):
 
 
 
+
 # visit
 class Visit(models.Model):
     VC = (
@@ -90,8 +93,10 @@ class Visit(models.Model):
         ("pending followup", "Pending followup"),
     )
 
+    patient = models.ForeignKey(Patient, on_delete=models.CASCADE)
     visit_category = models.CharField(choices=VC, max_length=300)
     facility = models.ForeignKey(Facility, on_delete=models.CASCADE)
+    provider = models.ForeignKey(get_user_model(), on_delete=models.CASCADE)
     date_of_service = models.DateField(default=timezone.now, null=True, blank=True)
     # add issue (optional)
     issue = models.CharField(max_length=200, choices=TP, null=True, blank=True, help_text="select one of these type title")
@@ -100,3 +105,41 @@ class Visit(models.Model):
     diagnosis = models.TextField(null=True, blank=True)
     outcome = models.CharField(max_length=200, choices=OT, null=True, blank=True)
 
+# CATEGORY OF ENCOUNTER
+
+# soap
+class Soap(models.Model):
+    encounter = models.ForeignKey(Visit, on_delete=models.CASCADE, related_name="soap")
+    subjective = models.TextField(null=True, blank=True)
+    objective = models.TextField(null=True, blank=True)
+    assessment = models.TextField(null=True, blank=True)
+    plan = models.TextField(null=True, blank=True)
+
+# vitals
+class Vitals(models.Model):
+    TL = (
+        ("",""),
+        ("oral","Oral"),
+        ("tympanic membrane", "Tympanic Membrane"),
+        ("rectal","Rectal"),
+        ("auxillary","Auxillary"),
+        ("temporal artery", "Temporal Artery"),
+    )
+
+    encounter = models.ForeignKey(Visit, on_delete=models.CASCADE, related_name="vital")
+    weight_in_lbs = models.FloatField(null=True, blank=True)
+    weight_in_kg = models.FloatField(null=True, blank=True)
+    height_in_cm = models.FloatField(null=True, blank=True)
+    BP_systolic_mmkg = models.FloatField(null=True, blank=True)
+    BP_diastolic_mmkg = models.FloatField(null=True, blank=True)
+    pulse_per_min = models.FloatField(null=True, blank=True)
+    respiration_per_min = models.FloatField(null=True, blank=True)
+    temperature_f = models.FloatField(null=True, blank=True)
+    temperature_c = models.FloatField(null=True, blank=True)
+    temp_location = models.CharField(choices=TL, max_length=200, null=True, blank=True)
+    oxygen_saturation_percentage = models.FloatField(null=True, blank=True)
+    head_circumference_cm = models.FloatField(null=True, blank=True)
+    waist_circumference_cm = models.FloatField(null=True, blank=True)
+    BMI_kg_per_m2 = models.FloatField(null=True, blank=True)
+    BMI_status_type = models.CharField(max_length=200, null=True, blank=True)
+    other_notes = models.CharField(max_length=200, null=True, blank=True)

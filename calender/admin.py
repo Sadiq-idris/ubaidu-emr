@@ -7,20 +7,20 @@ from .models import Calender
 User = get_user_model()
 
 class CalenderAdmin(admin.ModelAdmin):
-    list_display = ("category","date","status","user")
+    list_display = ("category","provider","status", "room_number", "date", "time", )
 
     def formfield_for_foreignkey(self, db_field, request, **kwargs):
-        if db_field.name == "user":
-            kwargs["queryset"] = User.objects.filter(username=request.user.username)
+        if db_field.name == "provider":
+            kwargs["queryset"] = User.objects.filter(authorized=True)
 
         return super().formfield_for_foreignkey(db_field, request, **kwargs)
 
     def get_queryset(self, request):
         qs = super().get_queryset(request)
-        if request.user.is_superuser:
+        if request.user.is_superuser or  request.user.authorized == False :
             return qs
 
-        return qs.filter(user=request.user)
+        return qs.filter(provider=request.user)
 
 admin.site.register(Calender, CalenderAdmin)
 
