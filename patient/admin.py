@@ -7,6 +7,24 @@ User = get_user_model()
 
 class PatientAdmin(admin.ModelAdmin):
     list_display = ("id", "first_name","dob","mobile","sex")
+    fieldsets = (
+        ("Who",{
+            "fields":("first_name","last_name","dob","sex","license_id","marital_status")
+        }),
+        ("Contact",{
+            "fields":("address","city","state","country","postal_code",
+            "emergency_phone","home_phone","mobile","contact_email",),
+        }),
+        ("Employer",{
+            "fields":("occupation","employers_numbers"),
+        }),
+        ("Status",{
+            "fields":("language","race","homeless"),
+        }),
+    )
+    search_fields = ["first_name"]
+    ordering = ["id"]
+    list_filter = ["sex"]
 
 admin.site.register(Patient, PatientAdmin)
 

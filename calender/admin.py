@@ -11,13 +11,16 @@ class CalenderAdmin(admin.ModelAdmin):
 
     def formfield_for_foreignkey(self, db_field, request, **kwargs):
         if db_field.name == "provider":
-            kwargs["queryset"] = User.objects.filter(authorized=True)
+            kwargs["queryset"] = User.objects.filter(access_control="physicians")
 
         return super().formfield_for_foreignkey(db_field, request, **kwargs)
 
     def get_queryset(self, request):
         qs = super().get_queryset(request)
-        if request.user.is_superuser or  request.user.authorized == False :
+        if request.user.is_superuser:
+            return qs
+        
+        elif request.user.access_control == "front office" or  request.user.access_control == "clinicians" :
             return qs
 
         return qs.filter(provider=request.user)

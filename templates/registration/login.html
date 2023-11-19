@@ -1,0 +1,34 @@
+{% extends  "index/base.html" %}
+{% block title %}Login{% endblock %}
+
+{% block content %}
+<div class="container vh-100 d-flex justify-content-center  align-items-center">
+   <div class="bg-light w-50 text-center p-3 rounded">
+        <h3 class="h3 ">Login</h3>
+       <form method="POST" class="form">
+            {% csrf_token %}
+
+            <label for="" class="label" >{{ form.username.label }}</label>
+            <div class="form-control mb-3">
+                {{ form.username }}
+            </div>
+
+            <label for="" class="label">{{ form.password.label }}</label>
+            <div class="form-control mb-3">
+                {{ form.password }}
+            </div>
+            
+
+            <div class="row">
+                <div class="col-12">
+                    <button type="submit" class="btn btn-primary btn-block">
+                        Log in
+                    </button>
+                </div>
+            </div>
+
+       </form>
+   </div>
+</div>
+{% endblock %}
+

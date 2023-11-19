@@ -14,7 +14,7 @@ class CustomUserAdmin(UserAdmin):
         "image_tag",
         "email",
         "is_staff",
-        "authorized",
+        "access_control",
     ]
 
     fieldsets = UserAdmin.fieldsets + (("info",{

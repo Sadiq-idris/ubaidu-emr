@@ -8,8 +8,8 @@ from django.utils.safestring import mark_safe
 class CustomUser(AbstractUser):
 
     CH = (
-        ("accounting", "Accounting"),
-        ("administrators" ,"Administrators"),
+        # ("accounting", "Accounting"),
+        # ("administrators" ,"Administrators"),
         ("clinicians", "Clinicians"),
         ("front office", "Front Office"),
         ("physicians", "Physicians"),
@@ -17,7 +17,6 @@ class CustomUser(AbstractUser):
 
 
     federal_tax_id = models.CharField(max_length=200, null=True, blank=True)
-    authorized = models.BooleanField(null=True, blank=True)
     job_description = models.CharField(max_length=3000, null=True, blank=True)
     access_control = models.CharField(choices=CH, max_length=200, null=True, blank=True)
     additional_info = models.TextField(max_length=5000, null=True, blank=True)
