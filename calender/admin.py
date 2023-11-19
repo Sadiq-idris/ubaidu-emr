@@ -31,7 +31,7 @@ admin.site.register(Calender, CalenderAdmin)
 
 # admin.site.unregister(Group)
 
-admin.site.site_header = "Ubaidu Openemr"
+admin.site.site_header = "Ubaidu-emr"
 
-admin.site.site_title = "Ubaidu-Openemr"
+admin.site.site_title = "Ubaidu-emr"
 
