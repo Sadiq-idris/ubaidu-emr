@@ -5,6 +5,8 @@ from django.contrib.auth import get_user_model
 from .forms import CustomUserCreationForm, CustomUserChangeForm
 from .models import CustomUser, Facility
 
+
+
 class CustomUserAdmin(UserAdmin):
     add_form = CustomUserCreationForm
     form = CustomUserChangeForm
@@ -20,7 +22,7 @@ class CustomUserAdmin(UserAdmin):
     fieldsets = UserAdmin.fieldsets + (("info",{
         "fields":(
             "user_pic",
-            "federal_tax_id","authorized",
+            "federal_tax_id",
             "job_description","access_control",
             "additional_info",
         ),
@@ -30,13 +32,25 @@ class CustomUserAdmin(UserAdmin):
         "fields":(
             "user_pic",
             "first_name","last_name","email",
-            "federal_tax_id","authorized",
+            "federal_tax_id",
             "job_description","access_control",
             "additional_info",
         ),
     }),)
 
-
-
 admin.site.register(CustomUser, CustomUserAdmin)
-admin.site.register(Facility)
+
+
+User = get_user_model()
+class FacilityAdmin(admin.ModelAdmin):
+    list_display = ("name",)
+
+    def formfield_for_foreignkey(self, db_field, request, **kwargs):
+        if db_field.name == "user":
+            kwargs["queryset"] = User.objects.filter(is_superuser=True)
+    
+        return super().formfield_for_foreignkey(db_field, request, **kwargs)
+
+
+
+admin.site.register(Facility, FacilityAdmin)

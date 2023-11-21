@@ -4,7 +4,7 @@ from django.utils import timezone
 from django.contrib.auth import get_user_model
 
 
-
+# patient model
 class Patient(models.Model):
 
     SX = (("male", "Male"), ("female", "Female"), ("other", "other"),)
@@ -63,6 +63,50 @@ class Patient(models.Model):
 
     def __str__(self):
         return f'{self.first_name} {self.last_name}'
+
+# prescription model   
+class Prescription(models.Model):
+
+    MU = (
+        ("mg","mg"),
+        ("mg/1cc","mg/1cc"),
+        ("mg/2cc","mg/2cc"),
+        ("mg/3cc","mg/3cc"),
+        ("mg/4cc","mg/4cc"),
+        ("mg/5cc","mg/5cc"),
+        ("mcg","mcg"),
+        ("gram","gram"),
+    )
+
+    IN = (
+        ("suspension","suspension"),
+        ("tablet","tablet"),
+        ("capsule","capsule"),
+        ("solution","solution"),
+        ("tsp","tsp"),
+        ("ml","ml"),
+    )
+
+    RF = (
+        ("01","01"),("02","02"),("03","03"),("04","04"),
+        ("05","05"),("06","06"),("07","07"),("08","08"),
+        ("09","09"),("10","10"),("11","11"),("12","12"),
+        ("13","13"),("14","14"),("15","15"),("16","16"),
+        ("17","17"),("18","18"),("19","19"),("20","20"),
+    )
+
+    patient = models.ForeignKey(Patient, on_delete=models.CASCADE)
+    currently_active = models.BooleanField()
+    starting_date = models.DateField(default=timezone.now)
+    provider = models.ForeignKey(get_user_model(), on_delete=models.CASCADE)
+    drug = models.CharField(max_length=200)
+    quantity = models.IntegerField()
+    medicine_units = models.CharField(max_length=200, choices=MU)
+    take = models.IntegerField()
+    _in = models.CharField(max_length=200, choices=IN)
+    refills = models.CharField(max_length=200, choices=RF)
+    notes = models.TextField(null=True, blank=True)
+    add_to_medication_list = models.BooleanField()
 
 
 

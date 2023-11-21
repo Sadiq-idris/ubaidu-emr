@@ -1,10 +1,16 @@
 from django.contrib import admin
 from django.contrib.auth import get_user_model
 
-from .models import Patient, Visit, Soap, Vitals
+from .models import Patient, Visit, Soap, Vitals, Prescription
 
 User = get_user_model()
 
+# prescription stackedline to be display in patient detail page
+class PrescriptionInline(admin.StackedInline):
+    model = Prescription
+    extra = 0
+
+# patient 
 class PatientAdmin(admin.ModelAdmin):
     list_display = ("id", "first_name","dob","mobile","sex")
     fieldsets = (
@@ -25,6 +31,8 @@ class PatientAdmin(admin.ModelAdmin):
     search_fields = ["first_name"]
     ordering = ["id"]
     list_filter = ["sex"]
+
+    inlines = (PrescriptionInline,)
 
 admin.site.register(Patient, PatientAdmin)
 
@@ -61,15 +69,22 @@ class VisitAdmin(admin.ModelAdmin):
 
     def formfield_for_foreignkey(self, db_field, request, **kwargs):
         if db_field.name == "provider":
-            kwargs["queryset"] = User.objects.filter(authorized=True)
+            kwargs["queryset"] = User.objects.filter(access_control="physicians")
         
         return super().formfield_for_foreignkey(db_field, request, **kwargs)
 
-# # custom admin page
-# class VisitSite(admin.AdminSite):
-#     site_header = "Appointment"
+# prescription admin
+class PrescriptionAdmin(admin.ModelAdmin):
+    list_display = ("drug", "quantity", "medicine_units","take", "_in", "provider",)
 
-# visit_site = VisitSite(name="visitsite")
+    def formfield_for_foreignkey(self, db_field, request, **kwargs):
+        if db_field.name == "provider":
+            kwargs["queryset"] = User.objects.filter(access_control="physicians")
+
+        return super().formfield_for_foreignkey(db_field, request, **kwargs)
+
+
+admin.site.register(Prescription, PrescriptionAdmin)
 
 
 admin.site.register(Visit, VisitAdmin)
