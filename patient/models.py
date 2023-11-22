@@ -75,7 +75,8 @@ class Patient(models.Model):
     homeless = models.BooleanField( null=True, blank=True, help_text="optional*")
 
     # insurance company 
-    insurance_company = models.ForeignKey(InsuranceCompany, on_delete=models.CASCADE, null=True, blank=True)
+    insurance_company = models.ForeignKey(InsuranceCompany, on_delete=models.CASCADE,
+     null=True, blank=True, related_name="patient")
 
 
     def __str__(self):
@@ -217,7 +218,7 @@ class CheckOut(models.Model):
         ("check","Check"),
         ("other","Other")
     )
-    visit = models.ForeignKey(Visit, on_delete=models.CASCADE)
+    visit = models.OneToOneField(Visit, on_delete=models.CASCADE, related_name="checkout")
     amount = models.IntegerField(help_text="naira")
     payment_method = models.CharField(max_length=200, choices=PM, null=True, blank=True)
     check_or_reference_number = models.IntegerField(null=True, blank=True)

@@ -1,0 +1,37 @@
+{% extends 'index/base.html' %}
+{% block title %}Insurance Company{% endblock %}
+{% block content %}
+    <div class="container bg-white vh-100 my-5 py-3 px-4 rounded">
+
+        <small class=" mb-2 d-block"><a href="{% url 'home' %}" class="link">Home</a></small>
+        <h1 class="text-center fw-bold">Insurance company's</h1>
+        <p>Bills to pay by insurance company's</p>
+        {% for insurance in insurances %}
+            <h3 class=""><span class="text-primary">({{insurance.id}})</span>{{insurance.name}}</h3>
+            <!-- Insurance company client patient data/info -->
+            <table class="table table-striped">
+                <thead>
+                    <tr>
+                    <th scope="col">id</th>
+                    <th scope="col">First Name</th>
+                    <th scope="col">Last Name</th>
+                    <th scope="col">Bills</th>
+                    </tr>
+                </thead> 
+                <tbody>
+                {% for patient in insurance.patient.all %}
+                    {% for visit in patient.visit.all %}
+                        <tr>
+                        <th scope="row">{{ patient.id }}</th>
+                        <td>{{ patient.first_name }}</td>
+                        <td>{{ patient.last_name }}</td>
+                        <td>&#x20A6;{{visit.checkout.amount}}</td>
+                        </tr>
+                    {% endfor %}
+                {% endfor %}
+                </tbody>
+            </table>
+        {% endfor %}
+        
+    </div>
+{% endblock %}
