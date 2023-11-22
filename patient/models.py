@@ -4,7 +4,21 @@ from django.utils import timezone
 from django.contrib.auth import get_user_model
 
 
-# patient model
+# -------------------------- insurance company ------------------------------
+class InsuranceCompany(models.Model):
+    name = models.CharField(max_length=200)
+    address =models.CharField(max_length=200)
+    state = models.CharField(max_length=200)
+    city = models.CharField(max_length=200)
+    zip_code = models.IntegerField()
+    Phone = models.IntegerField()
+
+
+    def __str__(self):
+        return self.name
+
+
+# -------------------------------- patient model ----------------------------------
 class Patient(models.Model):
 
     SX = (("male", "Male"), ("female", "Female"), ("other", "other"),)
@@ -60,11 +74,14 @@ class Patient(models.Model):
     race = models.CharField( max_length=500, choices=RC)
     homeless = models.BooleanField( null=True, blank=True, help_text="optional*")
 
+    # insurance company 
+    insurance_company = models.ForeignKey(InsuranceCompany, on_delete=models.CASCADE, null=True, blank=True)
+
 
     def __str__(self):
         return f'{self.first_name} {self.last_name}'
 
-# prescription model   
+# ---------------------------- prescription model   ----------------------------------------
 class Prescription(models.Model):
 
     MU = (
@@ -95,7 +112,7 @@ class Prescription(models.Model):
         ("17","17"),("18","18"),("19","19"),("20","20"),
     )
 
-    patient = models.ForeignKey(Patient, on_delete=models.CASCADE)
+    patient = models.ForeignKey(Patient, on_delete=models.CASCADE, related_name="prescription")
     currently_active = models.BooleanField()
     starting_date = models.DateField(default=timezone.now)
     provider = models.ForeignKey(get_user_model(), on_delete=models.CASCADE)
@@ -111,7 +128,7 @@ class Prescription(models.Model):
 
 
 
-# visit
+# ------------------------------------- visit ----------------------------------------------
 class Visit(models.Model):
     VC = (
         ("established patient", "Established Patient"),
@@ -137,7 +154,7 @@ class Visit(models.Model):
         ("pending followup", "Pending followup"),
     )
 
-    patient = models.ForeignKey(Patient, on_delete=models.CASCADE)
+    patient = models.ForeignKey(Patient, on_delete=models.CASCADE, related_name="visit")
     visit_category = models.CharField(choices=VC, max_length=300)
     facility = models.ForeignKey(Facility, on_delete=models.CASCADE)
     provider = models.ForeignKey(get_user_model(), on_delete=models.CASCADE)
@@ -149,9 +166,13 @@ class Visit(models.Model):
     diagnosis = models.TextField(null=True, blank=True)
     outcome = models.CharField(max_length=200, choices=OT, null=True, blank=True)
 
+    class Meta:
+        verbose_name = "Encouter"
+
+
 # CATEGORY OF ENCOUNTER
 
-# soap
+# ------------------------------------ soap -----------------------------------------
 class Soap(models.Model):
     encounter = models.ForeignKey(Visit, on_delete=models.CASCADE, related_name="soap")
     subjective = models.TextField(null=True, blank=True)
@@ -159,7 +180,7 @@ class Soap(models.Model):
     assessment = models.TextField(null=True, blank=True)
     plan = models.TextField(null=True, blank=True)
 
-# vitals
+# ----------------------------------------- vitals -----------------------------------------------
 class Vitals(models.Model):
     TL = (
         ("",""),
@@ -187,3 +208,17 @@ class Vitals(models.Model):
     BMI_kg_per_m2 = models.FloatField(null=True, blank=True)
     BMI_status_type = models.CharField(max_length=200, null=True, blank=True)
     other_notes = models.CharField(max_length=200, null=True, blank=True)
+
+
+# ------------------------------ checkout --------------------------------
+class CheckOut(models.Model):
+    PM = (
+        ("cash","Cash"),
+        ("check","Check"),
+        ("other","Other")
+    )
+    visit = models.ForeignKey(Visit, on_delete=models.CASCADE)
+    amount = models.IntegerField(help_text="naira")
+    payment_method = models.CharField(max_length=200, choices=PM, null=True, blank=True)
+    check_or_reference_number = models.IntegerField(null=True, blank=True)
+    posting_date = models.DateTimeField(default=timezone.now)

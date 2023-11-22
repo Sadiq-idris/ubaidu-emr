@@ -1,7 +1,8 @@
 from django.contrib import admin
 from django.contrib.auth import get_user_model
 
-from .models import Patient, Visit, Soap, Vitals, Prescription
+from .models import (Patient, Visit, Soap, Vitals,
+ Prescription, InsuranceCompany, CheckOut)
 
 User = get_user_model()
 
@@ -10,7 +11,7 @@ class PrescriptionInline(admin.StackedInline):
     model = Prescription
     extra = 0
 
-# patient 
+# ------------------------------------------- patient  -------------------------------
 class PatientAdmin(admin.ModelAdmin):
     list_display = ("id", "first_name","dob","mobile","sex")
     fieldsets = (
@@ -26,6 +27,9 @@ class PatientAdmin(admin.ModelAdmin):
         }),
         ("Status",{
             "fields":("language","race","homeless"),
+        }),
+        ("Insurance Company",{
+            "fields":("insurance_company",),
         }),
     )
     search_fields = ["first_name"]
@@ -49,13 +53,19 @@ class VitalInline(admin.StackedInline):
     extra = 1
     verbose_name = "Vital"
 
+# checkout 
+class CheckOutInline(admin.StackedInline):
+    model = CheckOut
+    extra = 0
+
+#  ---------------------------------------- visit admin -----------------------------------
 class VisitAdmin(admin.ModelAdmin):
     list_display = (
         "patient","date_of_service", "provider", "issue","visit_category",
     )
 
     fieldsets = (
-        ("New Encounter",{
+        ("Encounter",{
             "fields":("patient","visit_category","facility", "provider", "date_of_service"),
         }),
         ("Issue",{
@@ -64,7 +74,7 @@ class VisitAdmin(admin.ModelAdmin):
         }),
     )
 
-    inlines = (SoapInline,VitalInline,)
+    inlines = (SoapInline,VitalInline,CheckOutInline)
        
 
     def formfield_for_foreignkey(self, db_field, request, **kwargs):
@@ -73,9 +83,10 @@ class VisitAdmin(admin.ModelAdmin):
         
         return super().formfield_for_foreignkey(db_field, request, **kwargs)
 
-# prescription admin
+
+# ----------------------- prescription admin -------------------------------
 class PrescriptionAdmin(admin.ModelAdmin):
-    list_display = ("drug", "quantity", "medicine_units","take", "_in", "provider",)
+    list_display = ("drug", "quantity", "medicine_units","take", "_in", "provider","patient",)
 
     def formfield_for_foreignkey(self, db_field, request, **kwargs):
         if db_field.name == "provider":
@@ -90,3 +101,8 @@ admin.site.register(Prescription, PrescriptionAdmin)
 admin.site.register(Visit, VisitAdmin)
 
 
+# insurance company
+
+
+
+admin.site.register(InsuranceCompany)
