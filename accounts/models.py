@@ -6,7 +6,7 @@ from django.utils.safestring import mark_safe
 
 
 class CustomUser(AbstractUser):
-
+    is_staff = models.BooleanField(default=True)
     CH = (
         # ("accounting", "Accounting"),
         # ("administrators" ,"Administrators"),
